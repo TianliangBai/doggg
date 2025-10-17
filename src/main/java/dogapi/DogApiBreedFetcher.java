@@ -33,9 +33,7 @@ public class DogApiBreedFetcher implements BreedFetcher {
         String breedName = breed.trim().toLowerCase(Locale.ROOT);
         String url = "https://dog.ceo/api/breed/" + breedName + "/list";
 
-        Request request = new Request.Builder()
-                .url(url)
-                .build();
+        Request request = new Request.Builder().url(url).build();
 
         try (Response response = client.newCall(request).execute()) {
 
