@@ -5,7 +5,6 @@ import okhttp3.Request;
 import okhttp3.Response;
 import org.json.JSONArray;
 import org.json.JSONObject;
-
 import java.io.IOException;
 import java.util.*;
 
@@ -25,11 +24,45 @@ public class DogApiBreedFetcher implements BreedFetcher {
      */
     @Override
     public List<String> getSubBreeds(String breed) {
-        // TODO Task 1: Complete this method based on its provided documentation
-        //      and the documentation for the dog.ceo API. You may find it helpful
-        //      to refer to the examples of using OkHttpClient from the last lab,
-        //      as well as the code for parsing JSON responses.
-        // return statement included so that the starter code can compile and run.
-        return new ArrayList<>();
+        if (breed == null || breed.trim().isEmpty()) {
+
+            throw new BreedNotFoundException("Breed name is invalid");
+
+        }
+
+        String breedName = breed.trim().toLowerCase(Locale.ROOT);
+        String url = "https://dog.ceo/api/breed/" + breedName + "/list";
+
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+
+        try (Response response = client.newCall(request).execute()) {
+
+            if (response.body() == null) {
+                throw new BreedNotFoundException("Empty response from API");
+            }
+
+            JSONObject json = new JSONObject(response.body().string());
+
+            if (!"success".equalsIgnoreCase(json.optString("status"))) {
+                throw new BreedNotFoundException("Breed not found: " + breedName);
+            }
+
+            JSONArray array = json.optJSONArray("message");
+            List<String> result = new ArrayList<>();
+
+            if (array != null) {
+                for (int i = 0; i < array.length(); i++) {
+                    result.add(array.getString(i));
+                }
+            }
+
+            return result;
+
+        } catch (Exception e) {
+            throw new BreedNotFoundException("Error while fetching");
+        }
     }
 }
+
