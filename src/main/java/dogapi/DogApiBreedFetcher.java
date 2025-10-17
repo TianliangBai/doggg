@@ -33,9 +33,7 @@ public class DogApiBreedFetcher implements BreedFetcher {
         String breedName = breed.trim().toLowerCase(Locale.ROOT);
         String url = "https://dog.ceo/api/breed/" + breedName + "/list";
 
-        Request request = new Request.Builder()
-                .url(url)
-                .build();
+        Request request = new Request.Builder().url(url).build();
 
         try (Response response = client.newCall(request).execute()) {
 
@@ -50,15 +48,15 @@ public class DogApiBreedFetcher implements BreedFetcher {
             }
 
             JSONArray array = json.optJSONArray("message");
-            List<String> result = new ArrayList<>();
+            List<String> result_list = new ArrayList<>();
 
             if (array != null) {
                 for (int i = 0; i < array.length(); i++) {
-                    result.add(array.getString(i));
+                    result_list.add(array.getString(i));
                 }
             }
 
-            return result;
+            return result_list;
 
         } catch (Exception e) {
             throw new BreedNotFoundException("Error while fetching");
